@@ -1,0 +1,45 @@
+version: '2.1'
+
+services:
+
+  rabbitmq:
+    image: rabbitmq:3-management
+    restart: always
+    networks:
+    - rabbitmq_net
+    ports:
+    - 5672:5672 # port for the daemon API
+    - 15672:15672 # port for the RabbitMQ management interface
+    - 5432:5432 # PostgreSQL
+    
+  producer:
+    build: producer
+    restart: always
+    networks:
+    - rabbitmq_net
+    command: python producer.py
+    stdin_open: true
+    tty: true
+      
+    
+  consumer:
+    build: consumer
+    restart: always
+    networks:
+    - rabbitmq_net
+    command: python consumer.py
+    depends_on:
+      - dtbs
+      - rabbitmq
+    
+  dtbs:
+    image: postgres
+    restart: always
+    environment:
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: password
+    networks:
+    - rabbitmq_net
+
+networks:
+  rabbitmq_net:
