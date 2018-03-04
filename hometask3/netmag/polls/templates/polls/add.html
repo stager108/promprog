@@ -1,0 +1,8 @@
+{% if error_message %}<p><strong>{{ error_message }}</strong></p>{% endif %}
+
+<form action="{% url 'polls:add' %}" method="post">
+{% csrf_token %}
+{{ task_form.as_p }}
+<input type="submit" value="Create task" />
+</form>
+</div>
